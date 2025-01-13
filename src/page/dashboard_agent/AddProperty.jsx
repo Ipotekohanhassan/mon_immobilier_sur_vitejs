@@ -19,7 +19,7 @@ const AddProperty = () => {
     useEffect(() => {
         const verifyAuth = async () => {
             try {
-                const res = await axios.get(`${apiUrl}`);
+                const res = await axios.get(`${apiUrl}/index.php`);
                 if (res.data.Status === "Success") {
                     setAgentId(res.data.id);
                 } else {
@@ -36,7 +36,7 @@ const AddProperty = () => {
 
     // Récupérer les catégories au chargement du composant avec Axios
     useEffect(() => {
-        axios.get(`${apiUrl}/categories`)
+        axios.get(`${apiUrl}/category/getCategories.php`)
             .then(response => {
                 setCategories(response.data); // On met à jour les catégories dans l'état
             })
@@ -100,7 +100,7 @@ const AddProperty = () => {
         setPropertyDetails((prevDetails) => ({
             ...prevDetails,
             otherImages: files.length > 0 ? files.map((file) => URL.createObjectURL(file)) : [],
-            otherImagesFiles: files, // Enregistrez également les fichiers dans l'état
+            otherImagesFile: files, // Enregistrez également les fichiers dans l'état
         }));
     };
 
@@ -186,9 +186,11 @@ const AddProperty = () => {
             console.error("Aucune image principale sélectionnée.");
         }
 
-        if (propertyDetails.otherImagesFiles && propertyDetails.otherImagesFiles.length > 0) {
-            propertyDetails.otherImagesFiles.forEach((file) => {
-                formData.append('otherImages', file);
+        
+
+        if (propertyDetails.otherImagesFile && propertyDetails.otherImagesFile.length > 0) {
+            propertyDetails.otherImagesFile.forEach((file) => {
+                formData.append('otherImages[]', file);
             });
         } else {
             console.error("Aucune image supplémentaire sélectionnée.");
@@ -205,7 +207,8 @@ const AddProperty = () => {
         // }
 
         try {
-            const response = await axios.post(`${apiUrl}/ajouter-propriete`, formData, {
+            
+            const response = await axios.post(`${apiUrl}/property/ajouter_propriete.php`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data', 
                 },
@@ -213,7 +216,6 @@ const AddProperty = () => {
             });
 
             if (response.status === 200) {
-                console.log('Propriété ajoutée avec succès');
                 // Afficher un message de succès avec React Toastify
                 toast.success(response.data.Message);
 

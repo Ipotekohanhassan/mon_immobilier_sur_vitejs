@@ -10,19 +10,22 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 const apiUrl = import.meta.env.VITE_API_URL;
 
+
 const Dashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [id, setId] = useState('');
     const navigate = useNavigate();  
+
 
     //verifier si l'utilisateur est connecte
     axios.defaults.withCredentials = true;
     useEffect(() => {
         const verifyAuth = async () => {
             try {
-                const res = await axios.get(`${apiUrl}`);
+                const res = await axios.get(`${apiUrl}/index.php`);
                 if (res.data.Status === "Success") {
                     setId(res.data.id);
+                    
                 } else {
                     navigate('/login-agent'); // Redirection si non authentifié
                 }

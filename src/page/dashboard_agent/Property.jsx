@@ -18,7 +18,7 @@ const Property = () => {
     useEffect(() => {
         const verifyAuth = async () => {
             try {
-                const res = await axios.get(`${apiUrl}`);
+                const res = await axios.get(`${apiUrl}/index.php`);
                 if (res.data.Status === "Success") {
                     setId(res.data.id);
                 } else {

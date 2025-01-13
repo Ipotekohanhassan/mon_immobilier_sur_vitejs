@@ -19,8 +19,12 @@ const PasswordReset = () => {
         setError("");
         setMessage("");
         setLoading(true); // Activer le chargement
+        const formData = new FormData();
+        formData.append('email',email);
         try {
-            const response = await axios.post(`${apiUrl}/forgot-password`, { email });
+            console.log(email)
+            const response = await axios.post(`${apiUrl}/mdp_oublie.php`, formData );
+            console.log(response.data)
             setMessage(response.data.Message);
             setStep(2); // Passer à l'étape de réinitialisation
         } catch (err) {
@@ -36,8 +40,14 @@ const PasswordReset = () => {
         setError("");
         setMessage("");
         setLoading(true); // Activer le chargement
+
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('otp', otp);
+        formData.append('newPassword', newPassword);
         try {
-            const response = await axios.post(`${apiUrl}/reset-password`, { email, otp, newPassword });
+            const response = await axios.post(`${apiUrl}/verifier_modifier_mdp.php`, formData);
+
             setMessage(response.data.Message);
             setShowLoginButton(true); // Afficher le bouton "Se connecter"
         } catch (err) {

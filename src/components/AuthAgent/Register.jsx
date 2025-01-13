@@ -31,7 +31,7 @@ const RegisterAgent = () => {
         }
 
         // Envoi de la requête à l'API
-        axios.post(`${apiUrl}/register-agent`, values)
+        axios.post(`${apiUrl}/register.php`, values)
             .then(res => {
                 
                 if (res.data.Status === 'Success') {

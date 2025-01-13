@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import PropertyCard from './PropertyCard';
+import CardProperty from './CardProperty';
 const apiUrl = import.meta.env.VITE_API_URL;
 
-const PropertiesList = () => {
+const ListProperty = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -11,7 +11,7 @@ const PropertiesList = () => {
     useEffect(() => {
         const fetchProperties = async () => {
             try {
-                const response = await axios.get(`${apiUrl}/property/proprietes.php`, { withCredentials: true });
+                const response = await axios.get(`${apiUrl}/all_property.php`, { withCredentials: true });
                 setProperties(response.data.properties);
                 setError(null);
             } catch (err) {
@@ -24,15 +24,10 @@ const PropertiesList = () => {
         fetchProperties();
     }, []);
 
-    const handleDelete = (propertyId) => {
-        setProperties((prevProperties) => prevProperties.filter((property) => property.id !== propertyId));
-    };
 
     return (
         <div className="p-6 space-y-4">
-            <header className="text-center">
-                <h2 className="text-2xl font-semibold text-gray-800">Mes Propriétés</h2>
-            </header>
+
 
             {loading && <p>Chargement...</p>}
             {/* {error && <p className='text-center text-gray-400'>{error}</p>} */}
@@ -40,7 +35,7 @@ const PropertiesList = () => {
             {!loading && properties.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
                     {properties.map((property) => (
-                        <PropertyCard
+                        <CardProperty
                             key={property.id}
                             propertyId={property.id}
                             image={`${apiUrl}/property/${property.mainImage}`} // Assurez-vous que l'URL est correcte
@@ -48,7 +43,6 @@ const PropertiesList = () => {
                             description={property.description}
                             price={property.price}
                             state={property.status}
-                            onDelete={handleDelete}
                         />
                     ))}
                 </div>
@@ -59,4 +53,4 @@ const PropertiesList = () => {
     );
 };
 
-export default PropertiesList;
+export default ListProperty;

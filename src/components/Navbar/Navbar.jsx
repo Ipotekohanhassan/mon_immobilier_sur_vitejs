@@ -11,7 +11,7 @@ const Navbar = () => {
             {/* Logo section */}
             <div className='text-2xl flex items-center gap-2 font-bold uppercase'>
                 <p>Mon</p>
-                  <p className='text-secondary'>immobilier sur</p>
+                  <p className='text-secondary'>immobilier sûr</p>
             </div>
             {/* Menu section */}
             <div className='hidden md:block'>

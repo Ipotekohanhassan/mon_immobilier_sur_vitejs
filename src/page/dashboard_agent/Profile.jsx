@@ -27,12 +27,13 @@ const Profile = () => {
     // Fonction pour récupérer les informations du profil de l'agent
     const fetchProfileData = async () => {
         try {
-            const res = await axios.get(`${apiUrl}/profil/${id}`);
-            if (res.data.profil) {
+            const res = await axios.get(`${apiUrl}/profile/profile.php?agentId=${id}`);
+            
+            if (res.data) {
                 setProfileData({
-                    full_name: res.data.profil.full_name,
-                    email: res.data.profil.email,
-                    phone: res.data.profil.phone,
+                    full_name: res.data.full_name,
+                    email: res.data.email,
+                    phone: res.data.phone,
                 });
             } else {
                 toast.error(res.data.message);
@@ -48,7 +49,7 @@ const Profile = () => {
     useEffect(() => {
         const verifyAuth = async () => {
             try {
-                const res = await axios.get(`${apiUrl}`);
+                const res = await axios.get(`${apiUrl}/index.php`);
                 if (res.data.Status === "Success") {
                     setId(res.data.id);
                 } else {
@@ -82,9 +83,16 @@ const Profile = () => {
     // Mise à jour du profil
     const updateProfile = async (e) => {
         e.preventDefault();
+        const formData = new FormData();
+        formData.append("full_name", profileData.full_name);
+        formData.append("email", profileData.email);
+        formData.append("phone", profileData.phone);
         try {
-            const res = await axios.put(`${apiUrl}/update-profile/${id}`, profileData);
-            if (res.data.Status === "Success") {
+            
+            const res = await axios.post(`${apiUrl}/profile/modifier_profile.php?id=${id}`, formData);
+            
+            
+            if (res.data.status === "success") {
                 toast.success("Profil mis à jour avec succès !");
             } else {
                 toast.error(res.data.Message);

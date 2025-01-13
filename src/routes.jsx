@@ -8,6 +8,11 @@ import DetailsProperty from './page/dashboard_agent/DetailsProperty';
 import ModifyProperty from './page/dashboard_agent/Modify_Property';
 import Profile from './page/dashboard_agent/Profile';
 import Property from './page/dashboard_agent/Property';
+import DashAssist from './page/dashboard_assistant/DashAssist';
+import ListDesAgents from './page/dashboard_assistant/ListDesAgents';
+import ListProprietes from './page/dashboard_assistant/ListProprietes';
+import ProprieteDetail from './page/dashboard_assistant/ProprieteDetail';
+import VisiteList from './page/dashboard_assistant/VisiteList';
 import Home from './page/Home';
 
 export const routes = [
@@ -54,6 +59,26 @@ export const routes = [
     {
         path: "/profil",
         component: <Profile />
+    },
+    {
+        path: "/dashboard_assistant",
+        component: <DashAssist />
+    },
+    {
+        path: "/agent_list",
+        component: <ListDesAgents />
+    },
+    {
+        path: "/all_proprietes",
+        component: <ListProprietes />
+    },
+    {
+        path: "/propriete_detail/:propertyId",
+        component: <ProprieteDetail />
+    },
+    {
+        path: "/rendez_vous",
+        component: <VisiteList />
     },
     {
         path: "*",

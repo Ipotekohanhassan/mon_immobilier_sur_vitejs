@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../../components/DashAgent/Navbar";
-import Sidebar from "../../components/DashAgent/Sidebar";
+import Sidebar from '../../components/Assistant/Sidebar';
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AiOutlineClose } from "react-icons/ai";
 import MapComponent from "../../components/DashAgent/MapComponent";
+import { FaBars, FaEnvelope, FaPhone, FaSms } from "react-icons/fa";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 
-const DetailsProperty = () => {
+const ProprieteDetail = () => {
+    const [showModal, setShowModal] = useState(false);
+    const [selectedAgent, setSelectedAgent] = useState(null);
+
+    const handleContactClick = (agent) => {
+        setSelectedAgent(agent);
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setSelectedAgent(null);
+    };
     const { propertyId } = useParams();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [id, setId] = useState("");
@@ -31,6 +43,12 @@ const DetailsProperty = () => {
         mainImage: "",
         otherImages: [],
     });
+    const [agentDetails, setAgentDetails] = useState({
+        name: "",
+        email: "",
+        phone: "",
+
+    });
     const [categoryName, setCategoryName] = useState(""); // Nouvelle variable d'état pour la catégorie
     const [isImageModalOpen, setIsImageModalOpen] = useState(false); // Pour ouvrir/fermer la modal de l'image
     const [selectedImage, setSelectedImage] = useState(""); // Image sélectionnée
@@ -41,15 +59,15 @@ const DetailsProperty = () => {
     useEffect(() => {
         const verifyAuth = async () => {
             try {
-                const res = await axios.get(`${apiUrl}/index.php`);
-                if (res.data.Status === "Success") {
+                const res = await axios.get(`${apiUrl}/assistant/verifyAssistant.php`);
+                if (res.data.status === "success") {
                     setId(res.data.id);
                 } else {
-                    navigate("/login-agent");
+                    navigate('/auth-assistant'); // Redirection si non authentifié
                 }
             } catch (error) {
-                console.error("Erreur lors de la vérification de l'authentification", error);
-                navigate("/login-agent");
+                console.error('Erreur lors de la vérification de l\'authentification', error);
+                navigate('/auth-assistant'); // Redirection si erreur
             }
         };
 
@@ -58,19 +76,27 @@ const DetailsProperty = () => {
 
     useEffect(() => {
         axios
-            .get(`${apiUrl}/property/details_propriete.php/${propertyId}`, { withCredentials: true })
+            .get(`${apiUrl}/assistant/details_property.php/${propertyId}`, { withCredentials: true })
             .then((response) => {
+
                 setPropertyDetails({
-                    ...response.data.Property,
-                    mainImage: response.data.Property.mainImage || "",
-                    otherImages: response.data.Property.otherImages || [],
+                    ...response.data.Property.Details,
+                    mainImage: response.data.Property.Details.mainImage || "",
+                    otherImages: response.data.Property.Details.otherImages || [],
                 });
+                
+                setAgentDetails({
+                    name: response.data.Property.Agent.Nom,
+                    email: response.data.Property.Agent.Email,
+                    phone: response.data.Property.Agent.Telephone
+                });
+                
 
                 // Récupérer les informations de la catégorie en fonction de category_id
                 axios
-                    .get(`${apiUrl}/category/getCategoryById.php?id=${response.data.Property.category_id}`)
+                    .get(`${apiUrl}/category/getCategoryById.php?id=${response.data.Property.Details.category_id}`)
                     .then((categoryResponse) => {
-                        setCategoryName(categoryResponse.data.name); 
+                        setCategoryName(categoryResponse.data.name);
                     })
                     .catch((error) => {
                         console.error("Erreur lors de la récupération de la catégorie :", error);
@@ -82,10 +108,6 @@ const DetailsProperty = () => {
                 toast.error("Impossible de charger les détails de la propriété.");
             });
     }, [propertyId]);
-
-    const handleEdit = () => {
-        navigate(`/edit_property/${propertyId}`);
-    };
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -105,8 +127,17 @@ const DetailsProperty = () => {
     return (
         <div className="flex h-screen bg-gray-100">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-            <div className="flex-1 flex flex-col">
-                <Navbar toggleSidebar={toggleSidebar} />
+            <div
+                className="flex-1 p-6 md:ml-50 transition-all duration-300 overflow-y-auto"
+                style={{ height: "100vh" }}
+            >
+                {/* Toggle Sidebar Button */}
+                <button
+                    onClick={toggleSidebar}
+                    className="mb-6 md:hidden bg-primary text-white p-2 rounded-lg shadow-md"
+                >
+                    <FaBars />
+                </button>
                 <main className="p-6 space-y-8 flex-1 overflow-y-auto bg-white shadow-lg rounded-lg">
                     <ToastContainer />
                     <h2 className="text-3xl font-semibold text-gray-800 mb-6">Détails de la propriété</h2>
@@ -172,7 +203,7 @@ const DetailsProperty = () => {
                                 <div className="rounded-lg shadow-lg overflow-hidden border border-gray-300">
                                     {/* Affichage de la carte */}
                                     <MapComponent
-                                        
+
                                         latitude={propertyDetails.latitude}
                                         longitude={propertyDetails.longitude} />
                                 </div>
@@ -180,10 +211,15 @@ const DetailsProperty = () => {
                         </div>
                         <div className="mt-8 flex justify-center">
                             <button
-                                onClick={handleEdit} 
+                                onClick={() =>
+                                    handleContactClick({
+                                        email: agentDetails.email, // L'email de l'agent
+                                        telephone: agentDetails.phone, // Le numéro de l'agent
+                                    })
+                                }
                                 className="px-6 py-3 bg-orange-400 text-white font-semibold rounded-lg shadow-md hover:bg-orange-500 transition duration-200"
                             >
-                                Modifier la propriété
+                                Contacter l'Agent
                             </button>
                         </div>
                     </div>
@@ -203,7 +239,47 @@ const DetailsProperty = () => {
                             className="absolute top-0 right-0 p-2 text-white bg-black bg-opacity-50 rounded-full"
                             onClick={closeImageModal}
                         >
-                            <AiOutlineClose/>
+                            <AiOutlineClose />
+                        </button>
+                    </div>
+                </div>
+            )}
+            {/* Modal */}
+            {showModal && selectedAgent && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-xl shadow-xl w-96">
+                        <h2 className="text-xl font-bold mb-4">Contacter l'agent</h2>
+                        <div className="flex flex-col space-y-4">
+                            <button
+                                onClick={() =>
+                                    (window.location.href = `mailto:${selectedAgent.email}`)
+                                }
+                                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
+                            >
+                                <FaEnvelope className="mr-2" /> Envoyer un Email
+                            </button>
+                            <button
+                                onClick={() =>
+                                    (window.location.href = `tel:${selectedAgent.telephone}`)
+                                }
+                                className="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300"
+                            >
+                                <FaPhone className="mr-2" /> Passer un Appel
+                            </button>
+                            <button
+                                onClick={() =>
+                                    (window.location.href = `sms:${selectedAgent.telephone}`)
+                                }
+                                className="flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-300"
+                            >
+                                <FaSms className="mr-2" /> Envoyer un SMS
+                            </button>
+                        </div>
+                        <button
+                            onClick={closeModal}
+                            className="mt-6 text-gray-600 hover:text-gray-800 transition duration-300"
+                        >
+                            Fermer
                         </button>
                     </div>
                 </div>
@@ -212,4 +288,4 @@ const DetailsProperty = () => {
     );
 };
 
-export default DetailsProperty;
+export default ProprieteDetail;

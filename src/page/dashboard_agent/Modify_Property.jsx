@@ -22,7 +22,7 @@ const ModifyProperty = () => {
     useEffect(() => {
         const verifyAuth = async () => {
             try {
-                const res = await axios.get(`${apiUrl}`);
+                const res = await axios.get(`${apiUrl}/index.php`);
                 if (res.data.Status === "Success") {
                     setAgentId(res.data.id);
                 } else {
@@ -40,7 +40,7 @@ const ModifyProperty = () => {
     // Récupérer les catégories au chargement du composant avec Axios
     useEffect(() => {
     
-        axios.get(`${apiUrl}/categories`)
+        axios.get(`${apiUrl}/category/getCategories.php`)
             .then(response => {
                 setCategories(response.data); // On met à jour les catégories dans l'état
             })
@@ -51,13 +51,13 @@ const ModifyProperty = () => {
     
     // Charger les détails de la propriété existante
     useEffect(() => {
-        axios.get(`${apiUrl}/property/${id}`, {withCredentials:true})
+        axios.get(`${apiUrl}/property/details_propriete.php/${id}`, {withCredentials:true})
             .then(response => {
                 // Mettre à jour l'état avec les données de la propriété
                 setPropertyDetails({
-                    ...response.data.property, // Assurez-vous d'accéder à la clé correcte
-                    mainImage: response.data.property.mainImage || '', // URL de l'image principale
-                    otherImages: response.data.property.otherImages || [], // URL des images supplémentaires
+                    ...response.data.Property, // Assurez-vous d'accéder à la clé correcte
+                    mainImage: response.data.Property.mainImage || '', // URL de l'image principale
+                    otherImages: response.data.Property.otherImages || [], // URL des images supplémentaires
                 });
             })
             
@@ -218,14 +218,23 @@ const ModifyProperty = () => {
 
         if (propertyDetails.otherImagesFiles && propertyDetails.otherImagesFiles.length > 0) {
             propertyDetails.otherImagesFiles.forEach((file) => {
-                formData.append('otherImages', file);
+                formData.append('otherImages[]', file);
             });
         } else {
             console.error("Aucune image supplémentaire sélectionnée.");
         }
 
+        for (let [key, value] of formData.entries()) {
+            // Si la valeur est un fichier, affichez le nom du fichier
+            if (value instanceof File) {
+                console.log(`${key}: ${value.name}`);
+            } else {
+                console.log(`${key}: ${value}`);
+            }
+        }
+
         try {
-            const response = await axios.put(`${apiUrl}/modifier-propriete/${id}`, formData, {
+            const response = await axios.post(`${apiUrl}/property/modifier_propriete.php?propertyId=${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -543,7 +552,7 @@ const ModifyProperty = () => {
                                         {
                                             selectedImage === false ? (
                                                 <img
-                                                    src={`${apiUrl}/${propertyDetails.mainImage}`}
+                                                    src={`${apiUrl}/property/${propertyDetails.mainImage}`}
                                                     alt="Selected"
                                                     className="mt-4 w-48 h-48 object-cover rounded-lg shadow-lg"
                                                 />
@@ -587,7 +596,7 @@ const ModifyProperty = () => {
                                                     propertyDetails.otherImages.map((image, index) => (
                                                         <img
                                                             key={index}
-                                                            src={`${apiUrl}/${image}`}
+                                                            src={`${apiUrl}/property/${image}`}
                                                             alt={`other-${index}`}
                                                             className="w-24 h-24 object-cover rounded-lg shadow-lg"
                                                         />

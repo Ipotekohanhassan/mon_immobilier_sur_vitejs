@@ -2,6 +2,7 @@ import axios from 'axios';
 import React from 'react';
 import { AiOutlineHome, AiOutlineApartment, AiOutlineFileAdd, AiOutlineClose, AiOutlineUser, AiOutlineLogout, AiOutlineDashboard } from 'react-icons/ai';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -9,7 +10,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     const navigate = useNavigate();
 
     const handleLogout =()=>{
-        axios.get('http://localhost:8081/logout')
+        axios.get(`${apiUrl}/logout.php`)
         .then(res =>{
             navigate('/login-agent')
         }).catch(err => console.log(err));

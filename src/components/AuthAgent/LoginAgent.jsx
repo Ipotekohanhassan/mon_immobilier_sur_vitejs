@@ -22,10 +22,9 @@ const LoginAgent = () => {
 
         // Réinitialiser les notifications Toast
         toast.dismiss();
-        console.log(values)
 
         // Envoi de la requête à l'API
-        axios.post(`${apiUrl}/login-agent`, values, {
+        axios.post(`${apiUrl}/login.php`, values, {
             headers: {
                 'Content-Type': 'application/json',
             },

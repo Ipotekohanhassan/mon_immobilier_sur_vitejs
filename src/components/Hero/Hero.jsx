@@ -10,11 +10,10 @@ const Hero = () => {
                 <div className='flex flex-col justify-center py-14 md:py-0 font-playfair '>
                     <div className='text-center md:text-left space-y-6'>
                         <h1 className='text-5xl lg:text-6xl font-bold leading-relaxed xl:leading-normal'>
-                              Bienvenue sur Mon <span className='text-primary'>Immobilier sur</span>{" "}
+                              Bienvenue sur <span className='italic'> Mon <span className='text-primary'>Immobilier sûr</span></span>{" "}
                         </h1>
                         <p className='text-gray-600 xl:max-w-[500px]'>
-                            Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                            Vero eligendi facilis accusantium nam ipsam, velit aspernatur
+                              Que vous soyez un chercheur de propriété en quête de votre prochain bien immobilier ou un agent souhaitant mieux gérer vos annonces, nous avons la solution qu'il vous faut.
                         </p> 
                         {/* Button Section    */}
                         <div className='flex justify-center gap-8 md:justify-start !mt-4'>

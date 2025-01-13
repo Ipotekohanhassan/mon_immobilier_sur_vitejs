@@ -4,12 +4,13 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const PropertyCard = ({ image, title, description, price, state, propertyId, onDelete }) => {
     const navigate = useNavigate();
     const handleDelete = async () => {
         try {
-            const response = await axios.delete(`http://localhost:8081/delete/property/${propertyId}`, { withCredentials: true });
+            const response = await axios.delete(`${apiUrl}/property/suprimer_propriete.php?id=${propertyId}`, { withCredentials: true });
 
             // Vérifier si la réponse du serveur est réussie
             if (response.status === 200) {
